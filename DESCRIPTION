@@ -1,0 +1,28 @@
+Package: srmRsa
+Title: Social Relations Model Response Surface Analysis for Round Robin Data
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Cory",
+           family = "Costello",
+           role = c("aut", "cre"),
+           email = "coryc3133@gmail.com",
+           comment = c(ORCID = "0000-0003-3818-2738"))
+Description: This package has functions for estimating social relations model parameters and response surface analysis parameters in round robin data. It uses the lavaan package to fit te models and the RSA package to draw surface plots. 
+Depends: R (>= 3.6), 
+         lavaan (>= 0.6-5),
+Imports: stringr (>= 1.4.0),
+         rlang(>= 0.4.2),
+         RSA (>= 0.9.13),
+         dplyr (>= 0.8.3),
+         forcats (>= 0.4.0),
+         ggplot2 (>= 3.2.1),
+         purrr (>= 0.3.3),
+         tibble (>= 2.1.3),
+         tidyr (>= 1.0.0),
+         knitr (>= 1.26),
+         broom (>= 0.5.3)
+Suggests: TripleR (>= 1.5.3)
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.0.2
