@@ -121,6 +121,7 @@ srm_rsa_params_tbl <- function(fitted_srm_rsa,
 #' 3-d surface plot using the plotRSA() function from the RSA library
 #' @param fitted_srm_rsa The fitted SRM RSA object from which you want the
 #' surface plot.
+#' @param ... additional arguments supplied to RSA::plotRSA().
 #' @keywords RSA
 #' @return a wrapper for knitr::kable that extracts and tables
 #' the model comparison part of the SRM RSA output.
@@ -129,12 +130,12 @@ srm_rsa_params_tbl <- function(fitted_srm_rsa,
 #' for the comparison.
 #' @export
 #' @import knitr broom dplyr tidyr RSA
-srm_rsa_surface_plot <- function(fitted_srm_rsa){
+srm_rsa_surface_plot <- function(fitted_srm_rsa, ...){
   betas <- fitted_srm_rsa$srm_rsa_fit %>%
     broom::tidy() %>%
     dplyr::filter(label != "") %>%
     dplyr::distinct(label, .keep_all = TRUE) %>%
     dplyr::filter(str_detect(label, "b")) %>%
     dplyr::pull(estimate)
-RSA::plotRSA(x = betas[1], y = betas[2], x2 = betas[3], xy = betas[4], y2 = betas[5])
+RSA::plotRSA(x = betas[1], y = betas[2], x2 = betas[3], xy = betas[4], y2 = betas[5], ...)
 }
