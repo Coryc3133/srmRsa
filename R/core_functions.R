@@ -721,8 +721,181 @@ build_rsa_paths <- function(data,
                              unique_ysq[i,"b5"], " ~ ", "y_sq_int*" ,   1)
     }
   }
+  # X Y Identical Variable; perceiver self-report (1_1) on X * target Self-Report on X (2_2)
+  if(rating_x == rating_y &&
+     design == "psxts"){
+    message("X and Y variable are identical and psxts (perceiver self-report X target self-report) design specified;
+            NOTE: this assumes that self-reports are coded as where perceiver_id and target_id are the same.")
+    # get p_t matrix
+    p_t <- expand.grid(p = p, t = t)
+    p_t <- p_t[p_t$p != p_t$t,]
+    row.names(p_t) <- 1:nrow(p_t)
+    coef_var_mat <- p_t %>%
+      dplyr::as_tibble() %>%
+      dplyr::mutate(z  = paste(rating_z, p, t, sep = "_"),
+                    b1 = paste(rating_x, p, p, sep = "_"),
+                    b2 = paste(rating_x, t, t, sep = "_"),
+                    b3 = paste(rating_x, "sq", p, p, sep = "_"),
+                    b4 = paste0(rating_x,"_", p, "_", p, "x", t, "_", t),
+                    b5 = paste(rating_x, "sq", t, t, sep = "_"))
+    coef_var_str <- ""
+    # regression paths
+    for(i in 1:nrow(coef_var_mat)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             coef_var_mat[i,"z"], " ~ ",
+                             "b1*", coef_var_mat[i,"b1"], " + ",
+                             "b2*", coef_var_mat[i,"b2"], " + ",
+                             "b3*", coef_var_mat[i,"b3"], " + ",
+                             "b4*", coef_var_mat[i, "b4"], " + ",
+                             "b5*", coef_var_mat[i, "b5"], "\n\n")
+    }
+    # Variances
+    # Variances for targets' self-reports
+    unique_xs <- unique(coef_var_mat[,"b1"])
+    for(i in 1:nrow(unique_xs)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xs[i,"b1"], " ~~ ", "x_var*" , unique_xs[i,"b1"])
+    }
+    # Variances for targets' self-reports
+    unique_ys <- unique(coef_var_mat[,"b2"])
+    for(i in 1:nrow(unique_ys)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_ys[i,"b2"], " ~~ ", "y_var*" , unique_ys[i,"b2"])
+    }
+    # Variances for targets' self-reports
+    unique_xsq <- unique(coef_var_mat[,"b3"])
+    for(i in 1:nrow(unique_xsq)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xsq[i,"b3"], " ~~ ", "x_sq_var*" , unique_xsq[i,"b3"])
+    }
+    # variance for interaction term
+    unique_xy <- unique(coef_var_mat[,"b4"])
+    for(i in 1:nrow(unique_xy)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xy[i,"b4"], " ~~ ", "xy_int_var*" , unique_xsq[i,"b4"])
+    }
+    # Variances for targets' self-report squared terms
+    unique_ysq <- unique(coef_var_mat[,"b5"])
+    for(i in 1:nrow(unique_ysq)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_ysq[i,"b5"], " ~~ ", "y_sq_var*" , unique_ysq[i,"b5"])
+    }
+    # intercepts
+    # intercepts for perceivers' self
+    for(i in 1:nrow(unique_xs)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xs[i,"b1"], " ~ ", "x_int*" ,   1)
+    }
+    # intercepts for targets' self
+    for(i in 1:nrow(unique_ys)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_ys[i,"b2"], " ~ ", "y_int*" ,   1)
+    }
+    # intercepts for perceivers' self Squared term
+    for(i in 1:nrow(unique_xsq)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xsq[i,"b3"], " ~ ", "x_sq_int*" ,   1)
+    }
+    # intercetps for perceivers' X Targets' self interaction term
+    for(i in 1:nrow(unique_xy)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xy[i,"b4"], " ~ ", "xy_int_int*" ,   1)
+    }
+    # intercepts for targets' self squared term
+    for(i in 1:nrow(unique_ysq)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_ysq[i,"b5"], " ~ ", "y_sq_int*" ,   1)
+    }
+  }
+  # X Y are different; perceiver self-report (1_1) on X * target Self-Report on Y (2_2)
+  if(rating_x != rating_y &&
+     design == "psxts"){
+    message("X and Y variable are different variables and psxts (perceiver self-report X target self-perception) design specified;
+            NOTE: this assumes that self-reports are coded as where perceiver_id and target_id are the same.")
+    # get p_t matrix
+    p_t <- expand.grid(p = p, t = t)
+    p_t <- p_t[p_t$p != p_t$t,]
+    row.names(p_t) <- 1:nrow(p_t)
+    coef_var_mat <- p_t %>%
+      dplyr::as_tibble() %>%
+      dplyr::mutate(z  = paste(rating_z, p, t, sep = "_"),
+                    b1 = paste(rating_x, p, p, sep = "_"),
+                    b2 = paste(rating_y, t, t, sep = "_"),
+                    b3 = paste(rating_x, "sq", p, p, sep = "_"),
+                    b4 = paste0(rating_x,"_", p, "_", p, "x", rating_y, t, "_", t),
+                    b5 = paste(rating_y, "sq", t, t, sep = "_"))
+    coef_var_str <- ""
+    # regression paths
+    for(i in 1:nrow(coef_var_mat)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             coef_var_mat[i,"z"], " ~ ",
+                             "b1*", coef_var_mat[i,"b1"], " + ",
+                             "b2*", coef_var_mat[i,"b2"], " + ",
+                             "b3*", coef_var_mat[i,"b3"], " + ",
+                             "b4*", coef_var_mat[i, "b4"], " + ",
+                             "b5*", coef_var_mat[i, "b5"], "\n\n")
+    }
+    # Variances
+    # Variances for targets' self-reports
+    unique_xs <- unique(coef_var_mat[,"b1"])
+    for(i in 1:nrow(unique_xs)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xs[i,"b1"], " ~~ ", "x_var*" , unique_xs[i,"b1"])
+    }
+    # Variances for targets' self-reports
+    unique_ys <- unique(coef_var_mat[,"b2"])
+    for(i in 1:nrow(unique_ys)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_ys[i,"b2"], " ~~ ", "y_var*" , unique_ys[i,"b2"])
+    }
+    # Variances for targets' self-reports
+    unique_xsq <- unique(coef_var_mat[,"b3"])
+    for(i in 1:nrow(unique_xsq)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xsq[i,"b3"], " ~~ ", "x_sq_var*" , unique_xsq[i,"b3"])
+    }
+    # variance for interaction term
+    unique_xy <- unique(coef_var_mat[,"b4"])
+    for(i in 1:nrow(unique_xy)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xy[i,"b4"], " ~~ ", "xy_int_var*" , unique_xsq[i,"b4"])
+    }
+    # Variances for targets' self-report squared terms
+    unique_ysq <- unique(coef_var_mat[,"b5"])
+    for(i in 1:nrow(unique_ysq)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_ysq[i,"b5"], " ~~ ", "y_sq_var*" , unique_ysq[i,"b5"])
+    }
+    # intercepts
+    # intercepts for perceivers' self
+    for(i in 1:nrow(unique_xs)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xs[i,"b1"], " ~ ", "x_int*" ,   1)
+    }
+    # intercepts for targets' self
+    for(i in 1:nrow(unique_ys)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_ys[i,"b2"], " ~ ", "y_int*" ,   1)
+    }
+    # intercepts for perceivers' self Squared term
+    for(i in 1:nrow(unique_xsq)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xsq[i,"b3"], " ~ ", "x_sq_int*" ,   1)
+    }
+    # intercetps for perceivers' X Targets' self interaction term
+    for(i in 1:nrow(unique_xy)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xy[i,"b4"], " ~ ", "xy_int_int*" ,   1)
+    }
+    # intercepts for targets' self squared term
+    for(i in 1:nrow(unique_ysq)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_ysq[i,"b5"], " ~ ", "y_sq_int*" ,   1)
+    }
+  }
+  # Check if design is not available
   if(!is.null(design) &&
-     !(design %in% c("reciprocal", "pxp", "pxps", "pxts"))){
+     !(design %in% c("reciprocal", "pxp", "pxps", "pxts", "psxts"))){
        stop("design is mis-specified or undefined; please choose one of the defined options:
             reciprocal, pxp, pxps, pxts")
      }
@@ -809,6 +982,9 @@ build_rsa_paths <- function(data,
 #' and y is the perceivers' self-report.
 #' This can be on the same or different variables.}
 #' \item{pxts}{X is a perceiver's rating of a target
+#' and y is the targets' self-report.
+#' This can be on the same or different variables.}}
+#' \item{psxts}{X is a perceiver's self-report
 #' and y is the targets' self-report.
 #' This can be on the same or different variables.}}
 #' @param ... Optional additional arguments passed directly to
