@@ -121,7 +121,8 @@ srm_rsa_params_tbl <- function(fitted_srm_rsa,
 #' 3-d surface plot using the plotRSA() function from the RSA library
 #' @param fitted_srm_rsa The fitted SRM RSA object from which you want the
 #' surface plot.
-#' @param ... additional arguments supplied to RSA::plotRSA().
+#' @param ...  Optional additional arguments passed directly to \link[RSA]{plotRSA}
+#' For example, it can be used to set X, Y, or Z labels, axis-limits, etc.
 #' @keywords RSA
 #' @return a wrapper for knitr::kable that extracts and tables
 #' the model comparison part of the SRM RSA output.

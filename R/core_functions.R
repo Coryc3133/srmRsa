@@ -259,7 +259,7 @@ build_srm <-
 #' This can be on the same or different variables.}
 #' \item{pxts}{X is a perceiver's rating of a target
 #' and y is the targets' self-report.
-#' This can be on the same or different variables.}}
+#' This can be on the same or different variables.}
 #' \item{psxts}{X is a perceiver's self-report
 #' and y is the targets' self-report.
 #' This can be on the same or different variables.}}
@@ -986,12 +986,12 @@ build_rsa_paths <- function(data,
 #' This can be on the same or different variables.}
 #' \item{pxts}{X is a perceiver's rating of a target
 #' and y is the targets' self-report.
-#' This can be on the same or different variables.}}
+#' This can be on the same or different variables.}
 #' \item{psxts}{X is a perceiver's self-report
 #' and y is the targets' self-report.
 #' This can be on the same or different variables.}}
 #' @param ... Optional additional arguments passed directly to
-#' lavaan function as it fits each model. For example, it can be used
+#' \link[lavaan]{lavaan} as it fits each model. For example, it can be used
 #' to specify bootstrapped or robust standard errors. Note this will affect
 #' all three of the fitted models.
 #' @keywords social relations model, response surface analysis
@@ -1172,6 +1172,34 @@ fit_srm_rsa <- function(data,
     for(i in 1:nrow(p_t)){
       cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i], "x", rating_y, p_t$t[i], "_", p_t$t[i])
       cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i])
+      cross_y <- paste0(rating_y,"_", p_t$t[i], "_", p_t$t[i])
+      wide_data[, cross_prod] <-  wide_data[, cross_x] * wide_data[, cross_y]
+    }
+  }
+
+  # Perceiver self-perception X Target Self-Perception 1_1 X 2_2 on Same Variable
+  if(rating_x == rating_y &&
+     design == "psxts"){
+    p_t <- expand.grid(p = p, t = t)
+    p_t <- p_t[p_t$p != p_t$t,]
+    row.names(p_t) <- 1:nrow(p_t)
+    for(i in 1:nrow(p_t)){
+      cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$p[i], "x", p_t$t[i], "_", p_t$t[i])
+      cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$p[i])
+      cross_y <- paste0(rating_x,"_", p_t$t[i], "_", p_t$t[i])
+      wide_data[, cross_prod] <-  wide_data[, cross_x] * wide_data[, cross_y]
+    }
+  }
+
+  # Perceiver self-perception X Target Self-Perception 1_2 X 2_2 on Different XY Variable
+  if(rating_x != rating_y &&
+     design == "psxts"){
+    p_t <- expand.grid(p = p, t = t)
+    p_t <- p_t[p_t$p != p_t$t,]
+    row.names(p_t) <- 1:nrow(p_t)
+    for(i in 1:nrow(p_t)){
+      cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$p[i], "x", rating_y, p_t$t[i], "_", p_t$t[i])
+      cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$p[i])
       cross_y <- paste0(rating_y,"_", p_t$t[i], "_", p_t$t[i])
       wide_data[, cross_prod] <-  wide_data[, cross_x] * wide_data[, cross_y]
     }

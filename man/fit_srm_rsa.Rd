@@ -72,10 +72,13 @@ and y is the perceivers' self-report.
 This can be on the same or different variables.}
 \item{pxts}{X is a perceiver's rating of a target
 and y is the targets' self-report.
+This can be on the same or different variables.}
+\item{psxts}{X is a perceiver's self-report
+and y is the targets' self-report.
 This can be on the same or different variables.}}}
 
 \item{...}{Optional additional arguments passed directly to
-lavaan function as it fits each model. For example, it can be used
+\link[lavaan]{lavaan} as it fits each model. For example, it can be used
 to specify bootstrapped or robust standard errors. Note this will affect
 all three of the fitted models.}
 }

@@ -4,11 +4,14 @@
 \alias{srm_rsa_surface_plot}
 \title{SRM RSA Surface Plot}
 \usage{
-srm_rsa_surface_plot(fitted_srm_rsa)
+srm_rsa_surface_plot(fitted_srm_rsa, ...)
 }
 \arguments{
 \item{fitted_srm_rsa}{The fitted SRM RSA object from which you want the
 surface plot.}
+
+\item{...}{Optional additional arguments passed directly to \link[RSA]{plotRSA}
+For example, it can be used to set X, Y, or Z labels, axis-limits, etc.}
 }
 \value{
 a wrapper for knitr::kable that extracts and tables
