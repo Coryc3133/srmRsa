@@ -260,6 +260,9 @@ build_srm <-
 #' \item{pxts}{X is a perceiver's rating of a target
 #' and y is the targets' self-report.
 #' This can be on the same or different variables.}}
+#' \item{psxts}{X is a perceiver's self-report
+#' and y is the targets' self-report.
+#' This can be on the same or different variables.}}
 #' @keywords social relations model, response surface analysis
 #' @export
 build_rsa_paths <- function(data,
