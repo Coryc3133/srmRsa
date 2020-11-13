@@ -753,17 +753,20 @@ build_rsa_paths <- function(data,
                              "b5*", coef_var_mat[i, "b5"], "\n\n")
     }
     # Variances
-    # Variances for targets' self-reports
+    # Variances for perceivers' self-reports
     unique_xs <- unique(coef_var_mat[,"b1"])
     for(i in 1:nrow(unique_xs)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
                              unique_xs[i,"b1"], " ~~ ", "x_var*" , unique_xs[i,"b1"])
     }
     # Variances for targets' self-reports
-    unique_ys <- unique(coef_var_mat[,"b2"])
-    for(i in 1:nrow(unique_ys)){
-      coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_ys[i,"b2"], " ~~ ", "y_var*" , unique_ys[i,"b2"])
+    unique_ys <- anti_join(unique(coef_var_mat[,"b2"]),unique(coef_var_mat[,"b1"]),
+                           by = c("b2" = "b1"))
+    if(nrow(unique_ys > 0)){
+      for(i in 1:nrow(unique_ys)){
+        coef_var_str <- paste0(coef_var_str, "\n\n",
+                               unique_ys[i,"b2"], " ~~ ", "y_var*" , unique_ys[i,"b2"])
+      }
     }
     # Variances for targets' self-reports
     unique_xsq <- unique(coef_var_mat[,"b3"])
@@ -775,24 +778,30 @@ build_rsa_paths <- function(data,
     unique_xy <- unique(coef_var_mat[,"b4"])
     for(i in 1:nrow(unique_xy)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xy[i,"b4"], " ~~ ", "xy_int_var*" , unique_xsq[i,"b4"])
+                             unique_xy[i,"b4"], " ~~ ", "xy_int_var*" , unique_xy[i,"b4"])
     }
     # Variances for targets' self-report squared terms
-    unique_ysq <- unique(coef_var_mat[,"b5"])
-    for(i in 1:nrow(unique_ysq)){
-      coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_ysq[i,"b5"], " ~~ ", "y_sq_var*" , unique_ysq[i,"b5"])
+    unique_ysq <- anti_join(unique(coef_var_mat[,"b5"]),unique(coef_var_mat[,"b3"]),
+                           by = c("b5" = "b3"))
+    if(nrow(unique_ysq > 0)){
+      for(i in 1:nrow(unique_ysq)){
+        coef_var_str <- paste0(coef_var_str, "\n\n",
+                               unique_ysq[i,"b5"], " ~~ ", "y_sq_var*" , unique_ysq[i,"b5"])
+      }
     }
     # intercepts
-    # intercepts for perceivers' self
+    # intercepts for targets' & perceivers' self
     for(i in 1:nrow(unique_xs)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
                              unique_xs[i,"b1"], " ~ ", "x_int*" ,   1)
     }
-    # intercepts for targets' self
-    for(i in 1:nrow(unique_ys)){
-      coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_ys[i,"b2"], " ~ ", "y_int*" ,   1)
+    unique_ys <- anti_join(unique(coef_var_mat[,"b2"]),unique(coef_var_mat[,"b1"]),
+                           by = c("b2" = "b1"))
+    if(nrow(unique_ys > 0)){
+      for(i in 1:nrow(unique_ys)){
+        coef_var_str <- paste0(coef_var_str, "\n\n",
+                               unique_ys[i,"b2"], " ~~ ", "y_int*" , 1)
+      }
     }
     # intercepts for perceivers' self Squared term
     for(i in 1:nrow(unique_xsq)){
@@ -804,10 +813,13 @@ build_rsa_paths <- function(data,
       coef_var_str <- paste0(coef_var_str, "\n\n",
                              unique_xy[i,"b4"], " ~ ", "xy_int_int*" ,   1)
     }
-    # intercepts for targets' self squared term
-    for(i in 1:nrow(unique_ysq)){
-      coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_ysq[i,"b5"], " ~ ", "y_sq_int*" ,   1)
+    unique_ysq <- anti_join(unique(coef_var_mat[,"b5"]),unique(coef_var_mat[,"b3"]),
+                           by = c("b5" = "b3"))
+    if(nrow(unique_ysq > 0)){
+      for(i in 1:nrow(unique_ysq)){
+        coef_var_str <- paste0(coef_var_str, "\n\n",
+                               unique_ysq[i,"b5"], " ~~ ", "y_sq_int*" , 1)
+      }
     }
   }
   # X Y are different; perceiver self-report (1_1) on X * target Self-Report on Y (2_2)
@@ -861,7 +873,7 @@ build_rsa_paths <- function(data,
     unique_xy <- unique(coef_var_mat[,"b4"])
     for(i in 1:nrow(unique_xy)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xy[i,"b4"], " ~~ ", "xy_int_var*" , unique_xsq[i,"b4"])
+                             unique_xy[i,"b4"], " ~~ ", "xy_int_var*" , unique_xy[i,"b4"])
     }
     # Variances for targets' self-report squared terms
     unique_ysq <- unique(coef_var_mat[,"b5"])
@@ -1036,6 +1048,7 @@ fit_srm_rsa <- function(data,
   t <- unique(data[,target_id])
 
   # subset data to have just the vars of interest
+  data <- as.data.frame(data)
   data <- data[, c(perceiver_id,
                    target_id,
                    group_id,
