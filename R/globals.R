@@ -1,2 +1,2 @@
 utils::globalVariables(c(".", "rating", "var", "label",
-                         "estimate", "p.value"))
+                         "estimate", "p.value", "dyad_id"))

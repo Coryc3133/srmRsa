@@ -276,7 +276,9 @@ build_rsa_paths <- function(data,
 
   p <- unique(data[,perceiver_id])
   t <- unique(data[,target_id])
-
+  # vectorised function to order and combine values for dyad id
+  f = function(x,y) paste(sort(c(x, y)), collapse="_")
+  f = Vectorize(f)
   # Check if ratings are the same & what design is specified
   if(rating_x == rating_y &&
      is.null(design)){
@@ -292,11 +294,12 @@ build_rsa_paths <- function(data,
     row.names(p_t) <- 1:nrow(p_t)
     coef_var_mat <- p_t %>%
       dplyr::as_tibble() %>%
+      dplyr::mutate(dyad_id = factor(f(p, t))) %>%
       dplyr::mutate(z = paste(rating_z, p, t, sep = "_"),
                    b1 = paste(rating_x, p, t, sep = "_"),
                    b2 = paste(rating_x, t, p, sep = "_"),
                    b3 = paste(rating_x, "sq", p, t, sep = "_"),
-                   b4 = paste0(rating_x,"_", p, "_", t, "x", t, "_", p),
+                   b4 = paste(rating_x, dyad_id, "intx", sep = "_"),
                    b5 = paste(rating_x, "sq", t, p, sep = "_"))
     coef_var_str <- ""
     # regression paths
@@ -309,23 +312,31 @@ build_rsa_paths <- function(data,
                              "b4*", coef_var_mat[i, "b4"], " + ",
                              "b5*", coef_var_mat[i, "b5"], "\n\n")
     }
+
     # Variances
     for(i in 1:nrow(coef_var_mat)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
                              coef_var_mat[i,"b1"], " ~~ ", "xy_var*" ,coef_var_mat[i,"b1"],
                              "\n\n",
-                             coef_var_mat[i,"b3"], " ~~ ", "xy_sq_var*", coef_var_mat[i,"b3"],
-                             "\n\n",
-                             coef_var_mat[i,"b4"], " ~~ ", "xy_int_var*", coef_var_mat[i,"b4"])
+                             coef_var_mat[i,"b3"], " ~~ ", "xy_sq_var*", coef_var_mat[i,"b3"])
+    }
+    # variance for interaction term
+    unique_xy <- unique(coef_var_mat[,"b4"])
+    for(i in 1:nrow(unique_xy)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xy[i,"b4"], " ~~ ", "xy_int_var*" , unique_xy[i,"b4"])
     }
     # intercepts
     for(i in 1:nrow(coef_var_mat)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
                              coef_var_mat[i,"b1"], " ~ ", "xy_int*" ,   1,
                              "\n\n",
-                             coef_var_mat[i,"b3"], " ~ ", "xy_sq_int*", 1,
-                             "\n\n",
-                             coef_var_mat[i,"b4"], " ~ ", "xy_int_int*",1)
+                             coef_var_mat[i,"b3"], " ~ ", "xy_sq_int*", 1)
+    }
+    # intercepts forinteraction term
+    for(i in 1:nrow(unique_xy)){
+      coef_var_str <- paste0(coef_var_str, "\n\n",
+                             unique_xy[i,"b4"], " ~ ", "xy_int_int*" ,   1)
     }
   }
   # X Y different variables, Reciprocal Perception (1_2) on X * Perception (2_1) on Y
@@ -384,7 +395,7 @@ build_rsa_paths <- function(data,
   }
   # X Y different variables, Perception (1_2) on X * Perception (1_2) on Y
   if(rating_x != rating_y &&
-     design == "reciprocal"){
+     design == "pxp"){
     message("X and Y variable are different variables and pxp (perception X perception) design specified")
     # get p_t matrix
     p_t <- expand.grid(p = p, t = t)
@@ -735,11 +746,12 @@ build_rsa_paths <- function(data,
     row.names(p_t) <- 1:nrow(p_t)
     coef_var_mat <- p_t %>%
       dplyr::as_tibble() %>%
+      dplyr::mutate(dyad_id = factor(f(p, t))) %>%
       dplyr::mutate(z  = paste(rating_z, p, t, sep = "_"),
                     b1 = paste(rating_x, p, p, sep = "_"),
                     b2 = paste(rating_x, t, t, sep = "_"),
                     b3 = paste(rating_x, "sq", p, p, sep = "_"),
-                    b4 = paste0(rating_x,"_", p, "_", p, "x", t, "_", t),
+                    b4 = paste(rating_x, dyad_id, "intx", sep = "_"),
                     b5 = paste(rating_x, "sq", t, t, sep = "_"))
     coef_var_str <- ""
     # regression paths
@@ -1096,18 +1108,32 @@ fit_srm_rsa <- function(data,
     tidyr::spread(var, rating)
   # Calculate Cross-Products
   ## Reciprocal Perception X Perception 1_2 X 2_1 on same variable
+  # vectorised function to order and combine values for dyad id
+  f = function(x,y) paste(sort(c(x, y)), collapse="_")
+  f = Vectorize(f)
+  coef_var_mat <- p_t %>%
+    dplyr::as_tibble() %>%
+    dplyr::mutate(dyad_id = factor(f(p, t))) %>%
+    dplyr::mutate(b4 = paste(rating_x, dyad_id, "int", sep = "_"))
+
   if(rating_x == rating_y &&
      design == "reciprocal"){
     p_t <- expand.grid(p = p, t = t)
     p_t <- p_t[p_t$p != p_t$t,]
     row.names(p_t) <- 1:nrow(p_t)
-    for(i in 1:nrow(p_t)){
-      cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i], "x", p_t$t[i], "_", p_t$p[i])
-      cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i])
-      cross_y <- paste0(rating_x,"_", p_t$t[i], "_", p_t$p[i])
+    cross_prods <- p_t %>%
+      dplyr::as_tibble() %>%
+      dplyr::mutate(dyad_id = factor(f(p, t))) %>%
+      dplyr::mutate(b4 = paste(rating_x, dyad_id, "intx", sep = "_")) %>%
+      distinct(dyad_id, .keep_all = TRUE)
+    for(i in 1:nrow(cross_prods)){
+      cross_prod <- paste(rating_x, cross_prods$dyad_id[i], "intx", sep = "_")
+      cross_x <-  paste0(rating_x,"_", cross_prods$p[i], "_", cross_prods$t[i])
+      cross_y <- paste0(rating_x,"_", cross_prods$t[i], "_", cross_prods$p[i])
       wide_data[, cross_prod] <-  wide_data[, cross_x] * wide_data[, cross_y]
     }
   }
+
   ## Reciprocal Perception X Perception 1_2 X 2_1 on different XY variables
   if(rating_x != rating_y &&
      design == "reciprocal"){
@@ -1196,10 +1222,15 @@ fit_srm_rsa <- function(data,
     p_t <- expand.grid(p = p, t = t)
     p_t <- p_t[p_t$p != p_t$t,]
     row.names(p_t) <- 1:nrow(p_t)
-    for(i in 1:nrow(p_t)){
-      cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$p[i], "x", p_t$t[i], "_", p_t$t[i])
-      cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$p[i])
-      cross_y <- paste0(rating_x,"_", p_t$t[i], "_", p_t$t[i])
+    cross_prods <- p_t %>%
+      dplyr::as_tibble() %>%
+      dplyr::mutate(dyad_id = factor(f(p, t))) %>%
+      dplyr::mutate(b4 = paste(rating_x, dyad_id, "int", sep = "_")) %>%
+      distinct(dyad_id, .keep_all = TRUE)
+    for(i in 1:nrow(cross_prods)){
+      cross_prod <- paste(rating_x, cross_prods$dyad_id[i], "intx", sep = "_")
+      cross_x <-  paste0(rating_x,"_", cross_prods$p[i], "_", cross_prods$t[i])
+      cross_y <- paste0(rating_x,"_", cross_prods$t[i], "_", cross_prods$p[i])
       wide_data[, cross_prod] <-  wide_data[, cross_x] * wide_data[, cross_y]
     }
   }
