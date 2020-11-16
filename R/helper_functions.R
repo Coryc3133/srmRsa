@@ -74,41 +74,81 @@ rsa_modelcomp_tbl <- function(fitted_srm_rsa,
 #' @param caption The caption for the table. Defaults to generic label.
 #' @keywords RSA
 #' @return a wrapper for knitr::kable that extracts and tables
-#' the model comparison part of the SRM RSA output.
-#'  Contains AIC, BIC, Chi-squared, difference in
-#' model Chi-Squared values, and the corresponding df and p value
-#' for the comparison.
+#' the parameters from the SRMRSA model.
 #' @export
 #' @import knitr broom dplyr tidyr
 srm_rsa_params_tbl <- function(fitted_srm_rsa,
-                           caption = "SRM RSA Parameters"){
-
-  fitted_srm_rsa$srm_rsa_fit %>%
-    broom::tidy() %>%
-    dplyr::filter(label != "") %>%
-    dplyr::distinct(label, .keep_all = TRUE) %>%
-    dplyr::mutate(label = forcats::fct_relevel(label,
-                               "targ_var",
-                               "perc_var",
-                               "rel_var",
-                               "pt_cov",
-                               "rel_cov",
-                               "b1",
-                               "b2",
-                               "b3",
-                               "b4",
-                               "b5",
-                               "a1",
-                               "a2",
-                               "a3",
-                               "a4",
-                               "a5",
-                               "xy_var",
-                               "xy_sq_var",
-                               "xy_int_var",
-                               "xy_int",
-                               "xy_sq_int",
-                               "xy_int_int")) %>%
+                               caption = "SRM RSA Parameters"){
+  design <- fitted_srm_rsa$model_info$design
+  ratings <- fitted_srm_rsa$model_info$ratings
+  if(ratings == "identical" &&
+     design == "reciprocal" |
+     ratings == "identical" &&
+     design == "psxts"){
+    tbl <- fitted_srm_rsa$srm_rsa_fit %>%
+      broom::tidy() %>%
+      dplyr::filter(label != "") %>%
+      dplyr::distinct(label, .keep_all = TRUE) %>%
+      dplyr::mutate(label = forcats::fct_relevel(label,
+                                                 "targ_var",
+                                                 "perc_var",
+                                                 "rel_var",
+                                                 "pt_cov",
+                                                 "rel_cov",
+                                                 "b1",
+                                                 "b2",
+                                                 "b3",
+                                                 "b4",
+                                                 "b5",
+                                                 "a1",
+                                                 "a2",
+                                                 "a3",
+                                                 "a4",
+                                                 "a5",
+                                                 "xy_var",
+                                                 "xy_sq_var",
+                                                 "xy_intx_var",
+                                                 "xy_int",
+                                                 "xy_sq_int",
+                                                 "xy_intx_int"))
+  }
+  if(ratings == "different" &&
+     design == "reciprocal" |
+     ratings == "different" &&
+     design == "psxts" |
+     design %in% c("pxp", "pxps", "pxts")){
+    tbl <- fitted_srm_rsa$srm_rsa_fit %>%
+      broom::tidy() %>%
+      dplyr::filter(label != "") %>%
+      dplyr::distinct(label, .keep_all = TRUE) %>%
+      dplyr::mutate(label = forcats::fct_relevel(label,
+                                                 "targ_var",
+                                                 "perc_var",
+                                                 "rel_var",
+                                                 "pt_cov",
+                                                 "rel_cov",
+                                                 "b1",
+                                                 "b2",
+                                                 "b3",
+                                                 "b4",
+                                                 "b5",
+                                                 "a1",
+                                                 "a2",
+                                                 "a3",
+                                                 "a4",
+                                                 "a5",
+                                                 "x_var",
+                                                 "x_sq_var",
+                                                 "y_var",
+                                                 "y_sq_var",
+                                                 "xy_intx_var",
+                                                 "x_int",
+                                                 "y_int",
+                                                 "x_sq_int",
+                                                 "y_sq_int",
+                                                 "xy_intx_int"))
+  }
+  tbl %>%
     dplyr::arrange(label) %>%
     dplyr::select(label, estimate, p.value) %>%
     knitr::kable(caption = caption,
@@ -124,11 +164,8 @@ srm_rsa_params_tbl <- function(fitted_srm_rsa,
 #' @param ...  Optional additional arguments passed directly to \link[RSA]{plotRSA}
 #' For example, it can be used to set X, Y, or Z labels, axis-limits, etc.
 #' @keywords RSA
-#' @return a wrapper for knitr::kable that extracts and tables
-#' the model comparison part of the SRM RSA output.
-#'  Contains AIC, BIC, Chi-squared, difference in
-#' model Chi-Squared values, and the corresponding df and p value
-#' for the comparison.
+#' @return a wrapper for RSA::plotRSA() that generates 3-d surface plot based
+#' on the SRMRSA model output.
 #' @export
 #' @import knitr broom dplyr tidyr RSA
 srm_rsa_surface_plot <- function(fitted_srm_rsa, ...){

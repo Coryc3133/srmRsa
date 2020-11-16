@@ -324,7 +324,7 @@ build_rsa_paths <- function(data,
     unique_xy <- unique(coef_var_mat[,"b4"])
     for(i in 1:nrow(unique_xy)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xy[i,"b4"], " ~~ ", "xy_int_var*" , unique_xy[i,"b4"])
+                             unique_xy[i,"b4"], " ~~ ", "xy_intx_var*" , unique_xy[i,"b4"])
     }
     # intercepts
     for(i in 1:nrow(coef_var_mat)){
@@ -336,7 +336,7 @@ build_rsa_paths <- function(data,
     # intercepts forinteraction term
     for(i in 1:nrow(unique_xy)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xy[i,"b4"], " ~ ", "xy_int_int*" ,   1)
+                             unique_xy[i,"b4"], " ~ ", "xy_intx_int*" ,   1)
     }
   }
   # X Y different variables, Reciprocal Perception (1_2) on X * Perception (2_1) on Y
@@ -375,7 +375,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~~ ", "x_sq_var*", coef_var_mat[i,"b3"],
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~~ ", "xy_int_var*", coef_var_mat[i,"b4"],
+                             coef_var_mat[i,"b4"], " ~~ ", "xy_intx_var*", coef_var_mat[i,"b4"],
                              "\n\n",
                              coef_var_mat[i,"b5"], " ~~ ", "y_sq_var*" , coef_var_mat[i,"b5"])
     }
@@ -388,7 +388,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~ ", "x_sq_int*", 1,
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~ ", "xy_int_int*",1,
+                             coef_var_mat[i,"b4"], " ~ ", "xy_intx_int*",1,
                              "\n\n",
                              coef_var_mat[i,"b5"], " ~ ", "y_sq_int*" , 1)
     }
@@ -429,7 +429,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~~ ", "x_sq_var*", coef_var_mat[i,"b3"],
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~~ ", "xy_int_var*", coef_var_mat[i,"b4"],
+                             coef_var_mat[i,"b4"], " ~~ ", "xy_intx_var*", coef_var_mat[i,"b4"],
                              "\n\n",
                              coef_var_mat[i,"b5"], " ~~ ", "y_sq_var*" , coef_var_mat[i,"b5"])
     }
@@ -442,7 +442,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~ ", "x_sq_int*", 1,
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~ ", "xy_int_int*",1,
+                             coef_var_mat[i,"b4"], " ~ ", "xy_intx_int*",1,
                              "\n\n",
                              coef_var_mat[i,"b5"], " ~ ", "y_sq_int*" , 1)
     }
@@ -482,7 +482,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~~ ", "x_sq_var*", coef_var_mat[i,"b3"],
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~~ ", "xy_int_var*", coef_var_mat[i,"b4"])
+                             coef_var_mat[i,"b4"], " ~~ ", "xy_intx_var*", coef_var_mat[i,"b4"])
     }
     # Variances for self-reports
     # special because they repeat across dyads
@@ -505,7 +505,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~ ", "x_sq_int*", 1,
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~ ", "xy_int_int*",1)
+                             coef_var_mat[i,"b4"], " ~ ", "xy_intx_int*",1)
     }
     # intercetps for self; special bc they repeat
     for(i in 1:nrow(unique_ys)){
@@ -554,7 +554,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~~ ", "x_sq_var*", coef_var_mat[i,"b3"],
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~~ ", "xy_int_var*", coef_var_mat[i,"b4"])
+                             coef_var_mat[i,"b4"], " ~~ ", "xy_intx_var*", coef_var_mat[i,"b4"])
     }
     # Variances for self-reports
     # special because they repeat across dyads
@@ -577,7 +577,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~ ", "x_sq_int*", 1,
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~ ", "xy_int_int*",1)
+                             coef_var_mat[i,"b4"], " ~ ", "xy_intx_int*",1)
     }
     # intercetps for self; special bc they repeat
     for(i in 1:nrow(unique_ys)){
@@ -626,7 +626,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~~ ", "x_sq_var*", coef_var_mat[i,"b3"],
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~~ ", "xy_int_var*", coef_var_mat[i,"b4"])
+                             coef_var_mat[i,"b4"], " ~~ ", "xy_intx_var*", coef_var_mat[i,"b4"])
     }
     # Variances for self-reports
     # special because they repeat across dyads
@@ -649,7 +649,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~ ", "x_sq_int*", 1,
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~ ", "xy_int_int*",1)
+                             coef_var_mat[i,"b4"], " ~ ", "xy_intx_int*",1)
     }
     # intercetps for self; special bc they repeat
     for(i in 1:nrow(unique_ys)){
@@ -698,7 +698,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~~ ", "x_sq_var*", coef_var_mat[i,"b3"],
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~~ ", "xy_int_var*", coef_var_mat[i,"b4"])
+                             coef_var_mat[i,"b4"], " ~~ ", "xy_intx_var*", coef_var_mat[i,"b4"])
     }
     # Variances for self-reports
     # special because they repeat across dyads
@@ -721,7 +721,7 @@ build_rsa_paths <- function(data,
                              "\n\n",
                              coef_var_mat[i,"b3"], " ~ ", "x_sq_int*", 1,
                              "\n\n",
-                             coef_var_mat[i,"b4"], " ~ ", "xy_int_int*",1)
+                             coef_var_mat[i,"b4"], " ~ ", "xy_intx_int*",1)
     }
     # intercetps for self; special bc they repeat
     for(i in 1:nrow(unique_ys)){
@@ -769,7 +769,7 @@ build_rsa_paths <- function(data,
     unique_xs <- unique(coef_var_mat[,"b1"])
     for(i in 1:nrow(unique_xs)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xs[i,"b1"], " ~~ ", "x_var*" , unique_xs[i,"b1"])
+                             unique_xs[i,"b1"], " ~~ ", "xy_var*" , unique_xs[i,"b1"])
     }
     # Variances for targets' self-reports
     unique_ys <- anti_join(unique(coef_var_mat[,"b2"]),unique(coef_var_mat[,"b1"]),
@@ -778,19 +778,22 @@ build_rsa_paths <- function(data,
       for(i in 1:nrow(unique_ys)){
         coef_var_str <- paste0(coef_var_str, "\n\n",
                                unique_ys[i,"b2"], " ~~ ", "y_var*" , unique_ys[i,"b2"])
+        warning("Unique Y variables found. Perceiver Self-report X Target Self-report design with
+                same rating is expected to not have unique Y values; please check input and interpret
+                results with extreme caution.")
       }
     }
     # Variances for targets' self-reports
     unique_xsq <- unique(coef_var_mat[,"b3"])
     for(i in 1:nrow(unique_xsq)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xsq[i,"b3"], " ~~ ", "x_sq_var*" , unique_xsq[i,"b3"])
+                             unique_xsq[i,"b3"], " ~~ ", "xy_sq_var*" , unique_xsq[i,"b3"])
     }
     # variance for interaction term
     unique_xy <- unique(coef_var_mat[,"b4"])
     for(i in 1:nrow(unique_xy)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xy[i,"b4"], " ~~ ", "xy_int_var*" , unique_xy[i,"b4"])
+                             unique_xy[i,"b4"], " ~~ ", "xy_intx_var*" , unique_xy[i,"b4"])
     }
     # Variances for targets' self-report squared terms
     unique_ysq <- anti_join(unique(coef_var_mat[,"b5"]),unique(coef_var_mat[,"b3"]),
@@ -799,13 +802,16 @@ build_rsa_paths <- function(data,
       for(i in 1:nrow(unique_ysq)){
         coef_var_str <- paste0(coef_var_str, "\n\n",
                                unique_ysq[i,"b5"], " ~~ ", "y_sq_var*" , unique_ysq[i,"b5"])
+        warning("Unique Y-squared variables found. Perceiver Self-report X Target Self-report design with
+                same rating is expected to not have unique Y values; please check input and interpret
+                results with extreme caution.")
       }
     }
     # intercepts
     # intercepts for targets' & perceivers' self
     for(i in 1:nrow(unique_xs)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xs[i,"b1"], " ~ ", "x_int*" ,   1)
+                             unique_xs[i,"b1"], " ~ ", "xy_int*" ,   1)
     }
     unique_ys <- anti_join(unique(coef_var_mat[,"b2"]),unique(coef_var_mat[,"b1"]),
                            by = c("b2" = "b1"))
@@ -813,17 +819,20 @@ build_rsa_paths <- function(data,
       for(i in 1:nrow(unique_ys)){
         coef_var_str <- paste0(coef_var_str, "\n\n",
                                unique_ys[i,"b2"], " ~~ ", "y_int*" , 1)
+        warning("Unique Yvariables found. Perceiver Self-report X Target Self-report design with
+                same rating is expected to not have unique Y values; please check input and interpret
+                results with extreme caution.")
       }
     }
     # intercepts for perceivers' self Squared term
     for(i in 1:nrow(unique_xsq)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xsq[i,"b3"], " ~ ", "x_sq_int*" ,   1)
+                             unique_xsq[i,"b3"], " ~ ", "xy_sq_int*" ,   1)
     }
     # intercetps for perceivers' X Targets' self interaction term
     for(i in 1:nrow(unique_xy)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xy[i,"b4"], " ~ ", "xy_int_int*" ,   1)
+                             unique_xy[i,"b4"], " ~ ", "xy_intx_int*" ,   1)
     }
     unique_ysq <- anti_join(unique(coef_var_mat[,"b5"]),unique(coef_var_mat[,"b3"]),
                            by = c("b5" = "b3"))
@@ -831,6 +840,9 @@ build_rsa_paths <- function(data,
       for(i in 1:nrow(unique_ysq)){
         coef_var_str <- paste0(coef_var_str, "\n\n",
                                unique_ysq[i,"b5"], " ~~ ", "y_sq_int*" , 1)
+        warning("Unique Y-squared variables found. Perceiver Self-report X Target Self-report design with
+                same rating is expected to not have unique Y values; please check input and interpret
+                results with extreme caution.")
       }
     }
   }
@@ -885,7 +897,7 @@ build_rsa_paths <- function(data,
     unique_xy <- unique(coef_var_mat[,"b4"])
     for(i in 1:nrow(unique_xy)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xy[i,"b4"], " ~~ ", "xy_int_var*" , unique_xy[i,"b4"])
+                             unique_xy[i,"b4"], " ~~ ", "xy_intx_var*" , unique_xy[i,"b4"])
     }
     # Variances for targets' self-report squared terms
     unique_ysq <- unique(coef_var_mat[,"b5"])
@@ -912,7 +924,7 @@ build_rsa_paths <- function(data,
     # intercetps for perceivers' X Targets' self interaction term
     for(i in 1:nrow(unique_xy)){
       coef_var_str <- paste0(coef_var_str, "\n\n",
-                             unique_xy[i,"b4"], " ~ ", "xy_int_int*" ,   1)
+                             unique_xy[i,"b4"], " ~ ", "xy_intx_int*" ,   1)
     }
     # intercepts for targets' self squared term
     for(i in 1:nrow(unique_ysq)){
@@ -1279,7 +1291,10 @@ fit_srm_rsa <- function(data,
                                       srm_rsa_fit) %>%
     dplyr::as_tibble()
   wide_data <- dplyr::as_tibble(wide_data)
+  model_info <- list(design = design,
+                     ratings = ifelse(rating_x == rating_y, "identical", "different"))
   return(list(
+    model_info = model_info,
     srm_model = srm,
     rsa_paths = rsa_paths,
     srm_rsa_model = srm_rsa_model,
