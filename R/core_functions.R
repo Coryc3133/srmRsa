@@ -1111,10 +1111,6 @@ fit_srm_rsa <- function(data,
   # vectorised function to order and combine values for dyad id
   f = function(x,y) paste(sort(c(x, y)), collapse="_")
   f = Vectorize(f)
-  coef_var_mat <- p_t %>%
-    dplyr::as_tibble() %>%
-    dplyr::mutate(dyad_id = factor(f(p, t))) %>%
-    dplyr::mutate(b4 = paste(rating_x, dyad_id, "int", sep = "_"))
 
   if(rating_x == rating_y &&
      design == "reciprocal"){
