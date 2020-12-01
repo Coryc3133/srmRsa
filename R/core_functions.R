@@ -88,6 +88,11 @@ build_srm <-
     # Relationship Variance
     dyads <- expand.grid(p = unique(data[, perceiver_id]),
                          t = unique(data[, target_id]))
+    dyads <- cbind(p = data[, perceiver_id],
+                   t = data[, target_id])
+    dyads <- as.data.frame(dyads)
+    dyads <- dplyr::distinct(dyads)
+    dyads <- as.data.frame(dyads)
     dyads <- dyads[which(dyads$t != dyads$p),]
     # create vector of relationship effects
     rfx <- stringr::str_flatten(
@@ -274,11 +279,22 @@ build_rsa_paths <- function(data,
                             rating_z,
                             design = NULL){
 
-  p <- unique(data[,perceiver_id])
-  t <- unique(data[,target_id])
+  #p <- unique(data[,perceiver_id])
+  #t <- unique(data[,target_id])
   # vectorised function to order and combine values for dyad id
   f = function(x,y) paste(sort(c(x, y)), collapse="_")
   f = Vectorize(f)
+  # get p_t matrix
+  # note: added this to start since it is
+  # identical across designs. Also replaced
+  # expand.grid() on unique() of perceiver_id & target_id
+  # which couldn't handle full-block designs.
+  p_t <- cbind(p = data[,perceiver_id],
+               t = data[,target_id])
+  p_t <- as.data.frame(p_t)
+  p_t <- dplyr::distinct(p_t)
+  p_t <- as.data.frame(p_t)
+  p_t <- p_t[p_t$p != p_t$t,]
   # Check if ratings are the same & what design is specified
   if(rating_x == rating_y &&
      is.null(design)){
@@ -288,10 +304,7 @@ build_rsa_paths <- function(data,
   if(rating_x == rating_y &&
      design == "reciprocal"){
     message("X and Y variable are identical and reciprocal (1_2 X 2_1) design specified")
-    # get p_t matrix
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
+
     coef_var_mat <- p_t %>%
       dplyr::as_tibble() %>%
       dplyr::mutate(dyad_id = factor(f(p, t))) %>%
@@ -343,10 +356,7 @@ build_rsa_paths <- function(data,
   if(rating_x != rating_y &&
      design == "reciprocal"){
     message("X and Y variable are different variables and pxp (perception X perception) design specified")
-    # get p_t matrix
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
+
     coef_var_mat <- p_t %>%
       dplyr::as_tibble() %>%
       dplyr::mutate(z  = paste(rating_z, p, t, sep = "_"),
@@ -397,10 +407,7 @@ build_rsa_paths <- function(data,
   if(rating_x != rating_y &&
      design == "pxp"){
     message("X and Y variable are different variables and pxp (perception X perception) design specified")
-    # get p_t matrix
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
+
     coef_var_mat <- p_t %>%
       dplyr::as_tibble() %>%
       dplyr::mutate(z  = paste(rating_z, p, t, sep = "_"),
@@ -452,10 +459,7 @@ build_rsa_paths <- function(data,
      design == "pxps"){
     message("X and Y variable are identical and pxps (perception X perceiver self-perception) design specified;
             NOTE: this assumes that self-reports are coded as where perceiver_id and target_id are the same.")
-    # get p_t matrix
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
+
     coef_var_mat <- p_t %>%
       dplyr::as_tibble() %>%
       dplyr::mutate(z = paste(rating_z, p, t, sep = "_"),
@@ -524,10 +528,7 @@ build_rsa_paths <- function(data,
      design == "pxps"){
     message("X and Y variable are different and pxps (perception X perceiver self-perception) design specified;
             NOTE: this assumes that self-reports are coded as cases where perceiver_id and target_id are the same.")
-    # get p_t matrix
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
+
     coef_var_mat <- p_t %>%
       dplyr::as_tibble() %>%
       dplyr::mutate(z  = paste(rating_z, p, t, sep = "_"),
@@ -596,10 +597,7 @@ build_rsa_paths <- function(data,
      design == "pxts"){
     message("X and Y variable are identical and pxts (perception X target self-perception) design specified;
             NOTE: this assumes that self-reports are coded as where perceiver_id and target_id are the same.")
-    # get p_t matrix
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
+
     coef_var_mat <- p_t %>%
       dplyr::as_tibble() %>%
       dplyr::mutate(z  = paste(rating_z, p, t, sep = "_"),
@@ -668,10 +666,7 @@ build_rsa_paths <- function(data,
      design == "pxts"){
     message("X and Y variable are different variables and pxts (perception X target self-perception) design specified;
             NOTE: this assumes that self-reports are coded as where perceiver_id and target_id are the same.")
-    # get p_t matrix
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
+
     coef_var_mat <- p_t %>%
       dplyr::as_tibble() %>%
       dplyr::mutate(z  = paste(rating_z, p, t, sep = "_"),
@@ -740,10 +735,7 @@ build_rsa_paths <- function(data,
      design == "psxts"){
     message("X and Y variable are identical and psxts (perceiver self-report X target self-report) design specified;
             NOTE: this assumes that self-reports are coded as where perceiver_id and target_id are the same.")
-    # get p_t matrix
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
+
     coef_var_mat <- p_t %>%
       dplyr::as_tibble() %>%
       dplyr::mutate(dyad_id = factor(f(p, t))) %>%
@@ -819,7 +811,7 @@ build_rsa_paths <- function(data,
       for(i in 1:nrow(unique_ys)){
         coef_var_str <- paste0(coef_var_str, "\n\n",
                                unique_ys[i,"b2"], " ~~ ", "y_int*" , 1)
-        warning("Unique Yvariables found. Perceiver Self-report X Target Self-report design with
+        warning("Unique Y variables found. Perceiver Self-report X Target Self-report design with
                 same rating is expected to not have unique Y values; please check input and interpret
                 results with extreme caution.")
       }
@@ -851,10 +843,7 @@ build_rsa_paths <- function(data,
      design == "psxts"){
     message("X and Y variable are different variables and psxts (perceiver self-report X target self-perception) design specified;
             NOTE: this assumes that self-reports are coded as where perceiver_id and target_id are the same.")
-    # get p_t matrix
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
+
     coef_var_mat <- p_t %>%
       dplyr::as_tibble() %>%
       dplyr::mutate(z  = paste(rating_z, p, t, sep = "_"),
@@ -1068,9 +1057,15 @@ fit_srm_rsa <- function(data,
                         rating_z,
                         design = NULL,
                         ...){
-  p <- unique(data[,perceiver_id])
-  t <- unique(data[,target_id])
 
+  # get p_t matrix
+  p_t <- cbind(data[,perceiver_id],
+               data[,target_id])
+  colnames(p_t) <- c("p", "t")
+  p_t <- as.data.frame(p_t)
+  p_t <- dplyr::distinct(p_t)
+  p_t <- as.data.frame(p_t)
+  p_t <- p_t[p_t$p != p_t$t,]
   # subset data to have just the vars of interest
   data <- as.data.frame(data)
   data <- data[, c(perceiver_id,
@@ -1126,9 +1121,7 @@ fit_srm_rsa <- function(data,
 
   if(rating_x == rating_y &&
      design == "reciprocal"){
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
+
     cross_prods <- p_t %>%
       dplyr::as_tibble() %>%
       dplyr::mutate(dyad_id = factor(f(p, t))) %>%
@@ -1145,9 +1138,7 @@ fit_srm_rsa <- function(data,
   ## Reciprocal Perception X Perception 1_2 X 2_1 on different XY variables
   if(rating_x != rating_y &&
      design == "reciprocal"){
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
+
     for(i in 1:nrow(p_t)){
       cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i], "x", rating_y, p_t$t[i], "_", p_t$p[i])
       cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i])
@@ -1158,9 +1149,6 @@ fit_srm_rsa <- function(data,
   ## Perception X Perception 1_2 X 1_2 on different XY variables
   if(rating_x != rating_y &&
      design == "pxp"){
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
     for(i in 1:nrow(p_t)){
       cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i], "x", rating_y, p_t$p[i], "_", p_t$t[i])
       cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i])
@@ -1171,9 +1159,6 @@ fit_srm_rsa <- function(data,
   # Perception X Perceiver Self-Perception 1_2 X 1_1 on Same Variable
   if(rating_x == rating_y &&
      design == "pxps"){
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
     for(i in 1:nrow(p_t)){
       cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i], "x", p_t$p[i], "_", p_t$p[i])
       cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i])
@@ -1185,9 +1170,6 @@ fit_srm_rsa <- function(data,
   # Perception X Perceiver Self-Perception 1_2 X 1_1 on Different XY Variable
   if(rating_x != rating_y &&
      design == "pxps"){
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
     for(i in 1:nrow(p_t)){
       cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i], "x", rating_y, p_t$p[i], "_", p_t$p[i])
       cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i])
@@ -1199,9 +1181,6 @@ fit_srm_rsa <- function(data,
   # Perception X Target Self-Perception 1_2 X 2_2 on Same Variable
   if(rating_x == rating_y &&
      design == "pxts"){
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
     for(i in 1:nrow(p_t)){
       cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i], "x", p_t$t[i], "_", p_t$t[i])
       cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i])
@@ -1213,9 +1192,6 @@ fit_srm_rsa <- function(data,
   # Perception X Target Self-Perception 1_2 X 2_2 on Different XY Variable
   if(rating_x != rating_y &&
      design == "pxts"){
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
     for(i in 1:nrow(p_t)){
       cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i], "x", rating_y, p_t$t[i], "_", p_t$t[i])
       cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$t[i])
@@ -1227,9 +1203,6 @@ fit_srm_rsa <- function(data,
   # Perceiver self-perception X Target Self-Perception 1_1 X 2_2 on Same Variable
   if(rating_x == rating_y &&
      design == "psxts"){
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
     cross_prods <- p_t %>%
       dplyr::as_tibble() %>%
       dplyr::mutate(dyad_id = factor(f(p, t))) %>%
@@ -1246,9 +1219,6 @@ fit_srm_rsa <- function(data,
   # Perceiver self-perception X Target Self-Perception 1_2 X 2_2 on Different XY Variable
   if(rating_x != rating_y &&
      design == "psxts"){
-    p_t <- expand.grid(p = p, t = t)
-    p_t <- p_t[p_t$p != p_t$t,]
-    row.names(p_t) <- 1:nrow(p_t)
     for(i in 1:nrow(p_t)){
       cross_prod <- paste0(rating_x,"_", p_t$p[i], "_", p_t$p[i], "x", rating_y, p_t$t[i], "_", p_t$t[i])
       cross_x <-  paste0(rating_x,"_", p_t$p[i], "_", p_t$p[i])

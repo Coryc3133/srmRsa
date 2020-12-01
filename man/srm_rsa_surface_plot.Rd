@@ -14,11 +14,8 @@ surface plot.}
 For example, it can be used to set X, Y, or Z labels, axis-limits, etc.}
 }
 \value{
-a wrapper for knitr::kable that extracts and tables
-the model comparison part of the SRM RSA output.
- Contains AIC, BIC, Chi-squared, difference in
-model Chi-Squared values, and the corresponding df and p value
-for the comparison.
+a wrapper for RSA::plotRSA() that generates 3-d surface plot based
+on the SRMRSA model output.
 }
 \description{
 This function extracts the beta coefficients and generates a

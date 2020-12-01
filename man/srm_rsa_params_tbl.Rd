@@ -14,10 +14,7 @@ parameter table.}
 }
 \value{
 a wrapper for knitr::kable that extracts and tables
-the model comparison part of the SRM RSA output.
- Contains AIC, BIC, Chi-squared, difference in
-model Chi-Squared values, and the corresponding df and p value
-for the comparison.
+the parameters from the SRMRSA model.
 }
 \description{
 This function extracts the SRM components, the slopes from the regression
