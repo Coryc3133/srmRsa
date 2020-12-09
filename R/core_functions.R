@@ -927,13 +927,16 @@ build_rsa_paths <- function(data,
        stop("design is mis-specified or undefined; please choose one of the defined options:
             reciprocal, pxp, pxps, pxts")
      }
-  # Specify surface params
+  # Specify surface params, p10, and p11
   coef_var_str <- paste(coef_var_str,
-                        "a1 := b1 + b2
-                         a2 := b3 + b4 + b5
-                         a3 := b1 - b2
-                         a4 := b3 - b4 + b5
-                         a5 := b3 - b5", sep = "\n\n")
+                        "a1  := b1 + b2
+                         a2  := b3 + b4 + b5
+                         a3  := b1 - b2
+                         a4  := b3 - b4 + b5
+                         a5  := b3 - b5
+                         # formulas taken from Schonbrodt et al. (2018) Dyadic RSA
+                         p11 := ((b5-b3) + sqrt((b3-b5)^2 + b4^2)) / b4
+                         p10 := ((b1*b4 - 2*b2*b3) / (4*b3*b5 - b4^2)) - p11*((b2*b4 - 2*b1*b5)/(4*b3*b5 - b4^2))", sep = "\n\n")
   # specify return
   return(coef_var_str)
 }
@@ -1243,7 +1246,7 @@ fit_srm_rsa <- function(data,
                                design = design)
   srm_rsa_model <- paste(srm, rsa_paths, sep = "\n\n")
   srm_rsa_null_model <- stringr::str_replace_all(srm_rsa_model, "b3\\*|b4\\*|b5\\*", "0*")
-  srm_rsa_null_model <- stringr::str_remove_all(srm_rsa_null_model, "a1.*|a2.*|a3.*|a4.*|a5.*|")
+  srm_rsa_null_model <- stringr::str_remove_all(srm_rsa_null_model, "a1.*|a2.*|a3.*|a4.*|a5.*|p11.*|p10.*")
   # fit models
   basic_srm_fit <- lavaan::lavaan(srm,
                                   data = wide_data,

@@ -86,7 +86,7 @@ srm_rsa_params_tbl <- function(fitted_srm_rsa,
      ratings == "identical" &&
      design == "psxts"){
     tbl <- fitted_srm_rsa$srm_rsa_fit %>%
-      broom::tidy() %>%
+      broom::tidy(conf.int = TRUE) %>%
       dplyr::filter(label != "") %>%
       dplyr::distinct(label, .keep_all = TRUE) %>%
       dplyr::mutate(label = forcats::fct_relevel(label,
@@ -105,6 +105,8 @@ srm_rsa_params_tbl <- function(fitted_srm_rsa,
                                                  "a3",
                                                  "a4",
                                                  "a5",
+                                                 "p10",
+                                                 "p11",
                                                  "xy_var",
                                                  "xy_sq_var",
                                                  "xy_intx_var",
@@ -118,7 +120,7 @@ srm_rsa_params_tbl <- function(fitted_srm_rsa,
      design == "psxts" |
      design %in% c("pxp", "pxps", "pxts")){
     tbl <- fitted_srm_rsa$srm_rsa_fit %>%
-      broom::tidy() %>%
+      broom::tidy(conf.int = TRUE) %>%
       dplyr::filter(label != "") %>%
       dplyr::distinct(label, .keep_all = TRUE) %>%
       dplyr::mutate(label = forcats::fct_relevel(label,
@@ -137,6 +139,8 @@ srm_rsa_params_tbl <- function(fitted_srm_rsa,
                                                  "a3",
                                                  "a4",
                                                  "a5",
+                                                 "p10",
+                                                 "p11",
                                                  "x_var",
                                                  "x_sq_var",
                                                  "y_var",
@@ -150,9 +154,9 @@ srm_rsa_params_tbl <- function(fitted_srm_rsa,
   }
   tbl %>%
     dplyr::arrange(label) %>%
-    dplyr::select(label, estimate, p.value) %>%
+    dplyr::select(label, estimate, p.value, conf.low, conf.high) %>%
     knitr::kable(caption = caption,
-                 digits = c(NA, 2, 3))
+                 digits = c(NA, 2, 3, 2, 2))
 }
 
 #' SRM RSA Surface Plot
