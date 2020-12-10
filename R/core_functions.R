@@ -1213,8 +1213,8 @@ fit_srm_rsa <- function(data,
       distinct(dyad_id, .keep_all = TRUE)
     for(i in 1:nrow(cross_prods)){
       cross_prod <- paste(rating_x, cross_prods$dyad_id[i], "intx", sep = "_")
-      cross_x <-  paste0(rating_x,"_", cross_prods$p[i], "_", cross_prods$t[i])
-      cross_y <- paste0(rating_x,"_", cross_prods$t[i], "_", cross_prods$p[i])
+      cross_x <-  paste0(rating_x,"_", cross_prods$p[i], "_", cross_prods$p[i])
+      cross_y <- paste0(rating_x,"_", cross_prods$t[i], "_", cross_prods$t[i])
       wide_data[, cross_prod] <-  wide_data[, cross_x] * wide_data[, cross_y]
     }
   }
